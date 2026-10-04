@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice — InterviewForge</title>
+  <meta name="description" content="Practice real interview questions by role with a timer, STAR coaching, and timed mock interviews. Free daily practice for US job seekers.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+    <a href="index.html" class="logo">Interview<span>Forge</span></a>
+    <nav class="nav-links">
+      <a href="practice.html">Practice</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="practice.html" class="nav-cta">Start Practicing</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="practice.html">Practice</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <div class="practice-wrap">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num" id="statPracticed">0</div><div class="stat-label">Questions practiced</div></div>
+      <div class="stat"><div class="stat-num" id="statMocks">0</div><div class="stat-label">Mock interviews</div></div>
+      <div class="stat"><div class="stat-num" id="statStreak">0 days</div><div class="stat-label">Day streak</div></div>
+      <div class="stat"><div class="stat-num" id="statFreeLeft">5 / 5</div><div class="stat-label">Free left today</div></div>
+    </div>
+
+    <!-- Setup view: role + mode -->
+    <div id="setupView">
+      <h2 style="text-align:center; margin-bottom:14px;">Pick your role</h2>
+      <div class="role-grid" id="roleGrid"></div>
+
+      <h2 style="text-align:center; margin: 28px 0 14px;">Pick a mode</h2>
+      <div class="mode-bar">
+        <button type="button" class="mode-btn" id="modePractice">Practice<small>One question at a time, at your pace</small></button>
+        <button type="button" class="mode-btn" id="modeMock">Mock interview<small>5 timed questions in a row — the real thing</small></button>
+      </div>
+      <button type="button" class="btn btn-block" id="startBtn" disabled>Pick a role to start</button>
+    </div>
+
+    <!-- Session view: question card -->
+    <div id="sessionView" class="hidden">
+      <div id="mockProgress" class="hidden">
+        <div class="mock-count" id="mockCount">Question 1 of 5</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="qcard">
+        <div class="q-meta" id="qMeta">Role</div>
+        <div class="q-text" id="qText">Question</div>
+
+        <div class="timer-row">
+          <div class="timer-display" id="timerDisplay">02:00</div>
+          <div class="timer-select">
+            <span>Timer:</span>
+            <button type="button" data-timer-min="1">1 min</button>
+            <button type="button" data-timer-min="2" class="active">2 min</button>
+            <button type="button" data-timer-min="3">3 min</button>
+          </div>
+          <button type="button" class="btn btn-sm" id="timerStart">Start timer</button>
+          <button type="button" class="btn btn-sm btn-ghost" id="timerReset">Reset</button>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline" id="tipsToggle">Show tips &amp; answer framework</button>
+        <div class="tips-box" id="tipsBox">
+          <h4>💡 What interviewers look for</h4>
+          <p id="tipText"></p>
+          <h5>Answer framework</h5>
+          <ul id="tipFramework"></ul>
+        </div>
+
+        <label for="answerArea" style="display:block; font-weight:600; margin:14px 0 6px;">Your answer (type or speak it out loud, then type key points)</label>
+        <textarea class="answer-area" id="answerArea" placeholder="Type your answer here…"></textarea>
+
+        <div class="star-box">
+          <h4>STAR self-review — does your answer hit all four?</h4>
+          <label class="star-check"><input type="checkbox" id="starS"><span><strong>S</strong>ituation<small>Did you set the scene clearly?</small></span></label>
+          <label class="star-check"><input type="checkbox" id="starT"><span><strong>T</strong>ask<small>Did you state your responsibility?</small></span></label>
+          <label class="star-check"><input type="checkbox" id="starA"><span><strong>A</strong>ction<small>Did you describe what YOU did?</small></span></label>
+          <label class="star-check"><input type="checkbox" id="starR"><span><strong>R</strong>esult<small>Did you end with a measurable outcome?</small></span></label>
+        </div>
+
+        <div class="score-row" id="scoreRow">
+          <span class="score-label">Self-score:</span>
+          <button type="button" class="score-btn" data-score="1">1</button>
+          <button type="button" class="score-btn" data-score="2">2</button>
+          <button type="button" class="score-btn" data-score="3">3</button>
+          <button type="button" class="score-btn" data-score="4">4</button>
+          <button type="button" class="score-btn" data-score="5">5</button>
+        </div>
+
+        <div class="qnav">
+          <button type="button" class="btn" id="nextBtn">Next question →</button>
+          <button type="button" class="btn hidden" id="mockNextBtn">Next question →</button>
+          <button type="button" class="btn hidden" id="endMockBtn">Finish mock interview</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary view: mock results -->
+    <div id="summaryView" class="hidden">
+      <div class="summary-box">
+        <h2>Mock interview complete 🎉</h2>
+        <p>Here's how you did:</p>
+        <div class="big-score" id="summaryScore">—</div>
+        <div class="summary-stats">
+          <div class="summary-stat"><div class="n" id="summaryQs">5 questions</div><div class="l">completed</div></div>
+          <div class="summary-stat"><div class="n" id="summaryStreak">0 days</div><div class="l">day streak</div></div>
+        </div>
+        <p id="summaryNote"></p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:22px;">
+          <button type="button" class="btn" id="summaryPracticeBtn">Practice more</button>
+          <button type="button" class="btn btn-outline" id="summaryRolesBtn">Change role</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Upgrade modal -->
+<div class="modal-backdrop" id="upgradeModal">
+  <div class="modal">
+    <h3>Unlock unlimited practice 🚀</h3>
+    <p>You've used your 5 free questions for today. Go Pro for unlimited questions, unlimited mock interviews, and full answer frameworks.</p>
+    <!-- TODO: replace with real Stripe payment link -->
+    <a href="#" class="btn btn-block" id="stripeMonthly" style="margin-bottom:10px;">Go Pro — $15/mo</a>
+    <!-- TODO: replace with real Stripe payment link -->
+    <a href="#" class="btn btn-block btn-outline" id="stripeYearly">Go Yearly — $119/yr</a>
+    <button type="button" class="modal-close" id="upgradeClose">Maybe later</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="cross-link">
+      <span class="icon">📄</span>
+      <div>
+        <strong>Also try ResumeForge — free resume builder.</strong><br>
+        Build a job-winning resume with live preview and an ATS score checker.
+        <a href="https://myresumeforge.onrender.com/">Try it free →</a>
+      </div>
+    </div>
+    <div class="footer-grid">
+      <div>
+        <h4>InterviewForge</h4>
+        <p>Mock-interview practice for US job seekers. Timed questions, STAR coaching, real results.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="practice.html">Practice</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-cta" style="text-align:center; margin-bottom:22px;">
+      <!-- TODO: replace with real Stripe payment link -->
+      <a href="#" class="btn">Upgrade to Pro — $15/mo</a>
+    </div>
+    <div class="footer-bottom">© 2026 InterviewForge. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/practice.js"></script>
+</body>
+</html>
